@@ -13,16 +13,19 @@ contract WatchlistVault {
 
     constructor(address registry_) {
         admin = tx.origin;
+        // PROBLEM 1
         registry = IWatchlistRegistry(registry_);
     }
 
     function deposit(uint256 amount) external payable {
         pool += amount;
+        // PROBLEM 2
     }
 
     function withdraw(address wallet, uint256 amount) external {
         pool -= amount;
         try this.pull(wallet, amount) returns (bool ok) {
+            // PROBLEM 2
             ok;
         } catch {}
     }
