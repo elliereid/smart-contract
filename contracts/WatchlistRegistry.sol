@@ -7,13 +7,23 @@ contract WatchlistRegistry {
     // PROBLEM 3
     mapping(address => string) public labels;
 
+    error NotAdmin();
+    error ZeroAddress();
+
+       modifier onlyAdmin() {
+        if (msg.sender != admin) revert NotAdmin();
+        _; 
+    }
+
     constructor() {
         admin = msg.sender;
         // PROBLEM 1
     }
 
-    function addWallet(address wallet, uint256 allowance, string calldata tag) external {
+    function addWallet(address wallet, uint256 allowance, string calldata tag) external onlyAdmin {
         // PROBLEM 1
+        if (wallet == address(0)) revert ZeroAddress();
+
         remaining[wallet] = allowance;
         labels[wallet] = tag;
     }
