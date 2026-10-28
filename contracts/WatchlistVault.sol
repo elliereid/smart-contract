@@ -12,7 +12,7 @@ contract WatchlistVault {
     uint256 public pool;
 
     constructor(address registry_) {
-        admin = tx.origin;
+        admin = msg.sender;
         // PROBLEM 1
         registry = IWatchlistRegistry(registry_);
     }
