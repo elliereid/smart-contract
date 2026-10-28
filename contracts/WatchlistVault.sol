@@ -18,6 +18,7 @@ contract WatchlistVault {
     error ZeroAmount();
 
     event Deposited(address indexed from, uint256 amount);
+    event Withdrawn(address indexed wallet, uint256 amount);
 
     constructor(address registry_) {
         admin = msg.sender;
@@ -37,7 +38,12 @@ contract WatchlistVault {
         if (amount == 0) revert ZeroAmount();
         if (!registry.listed(wallet)) revert NotListed();
         if (amount > pool) revert PoolInsufficient();
+
         // State changes before ETH leaves
         pool -= amount;
+
+        // Added an emit event in place of pull
+        registry.consume(wallet, amount); // reverts if over allowance
+        emit Withdrawn(wallet, amount);
     }
 }
