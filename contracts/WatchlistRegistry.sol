@@ -7,7 +7,7 @@ contract WatchlistRegistry {
     mapping(address => string) public labels;
 
     constructor() {
-        admin = tx.origin;
+        admin = msg.sender;
         // PROBLEM 1
     }
 
