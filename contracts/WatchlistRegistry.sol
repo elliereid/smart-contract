@@ -11,7 +11,11 @@ contract WatchlistRegistry {
 
     // Errors
     error NotAdmin();
+    error NotVault();
     error ZeroAddress();
+    error ZeroAmount();
+    error InsufficientAllowance();
+
 
     event VaultSet(address indexed vault);
 
@@ -51,7 +55,19 @@ contract WatchlistRegistry {
     }
 
     function consume(address wallet, uint256 amount) external {
-        remaining[wallet] = amount;
+        // Authorize msg.sender as vault
+        if (msg.sender != vault) revert NotVault();
+
+        // Validate that there isn't a 0 amount
+        if (amount == 0) revert ZeroAmount();
+
+        //Read local storage once & reuse
+        uint256 leftAmount = remaining[wallet];
+
+        if (amount > leftAmount) revert InsufficientAllowance();
+
+        // Changed to allow no one to be able to reset wallet's allowance
+        remaining[wallet] = leftAmount - amount;
         // PROBLEM 2
     }
 }
