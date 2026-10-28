@@ -12,7 +12,11 @@ contract WatchlistVault {
     IWatchlistRegistry public registry;
     uint256 public pool;
 
+    error NotListed();
+    error PoolInsufficient();
+    error TransferFailed();
     error ZeroAmount();
+
     event Deposited(address indexed from, uint256 amount);
 
     constructor(address registry_) {
@@ -29,16 +33,11 @@ contract WatchlistVault {
     }
 
     function withdraw(address wallet, uint256 amount) external {
+        // Check for custom errors
+        if (amount == 0) revert ZeroAmount();
+        if (!registry.listed(wallet)) revert NotListed();
+        if (amount > pool) revert PoolInsufficient();
+        // State changes before ETH leaves
         pool -= amount;
-        try this.pull(wallet, amount) returns (bool ok) {
-            // PROBLEM 2
-            ok;
-        } catch {}
-    }
-
-    function pull(address wallet, uint256 amount) external returns (bool) {
-        (bool sent, ) = wallet.call{value: amount}("");
-        require(sent);
-        return true;
     }
 }
