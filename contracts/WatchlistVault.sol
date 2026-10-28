@@ -45,5 +45,9 @@ contract WatchlistVault {
         // Added an emit event in place of pull
         registry.consume(wallet, amount); // reverts if over allowance
         emit Withdrawn(wallet, amount);
+
+        // Interacting after
+        (bool sent, ) = wallet.call{value: amount}("");
+        if (!sent) revert TransferFailed();
     }
 }
